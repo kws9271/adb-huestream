@@ -10,6 +10,10 @@ import homeassistant.helpers.config_validation as cv
 
 _LOGGER = logging.getLogger(__name__)
 
+DOMAIN = "huestream"
+
+CONF_ADB_HOST = "adb_host"
+CONF_ADB_PORT = "adb_port"
 DEFAULT_NAME = 'Huestream'
 DEFAULT_ADB_HOST = '127.0.0.1'
 DEFAULT_ADB_PORT = '5037'
@@ -19,8 +23,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 	vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
 	vol.Required(CONF_HOST): cv.string,
     vol.Optional(CONF_PORT, default=DEFAULT_PORT): cv.port,
-	vol.Optional("adb_host", default=DEFAULT_ADB_HOST): cv.string,
-    vol.Optional("adb_port", default=DEFAULT_ADB_PORT): cv.port
+	vol.Optional(CONF_ADB_HOST, default=DEFAULT_ADB_HOST): cv.string,
+    vol.Optional(CONF_ADB_PORT, default=DEFAULT_ADB_PORT): cv.port
 })
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
@@ -28,17 +32,17 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 	name = config.get(CONF_NAME)
 	host = config[CONF_HOST]
 	port = config.get(CONF_PORT)
-	adb_host = config.get("adb_host")
-	adb_port = config.get("adb_port")
+	adb_host = config.get(CONF_ADB_HOST)
+	adb_port = config.get(CONF_ADB_PORT)
     try:
-        client = AdbClient(host=self._adb_host, port=self._adb_port)
+        client = AdbClient(host=adb_host, port=adb_port)
         try:
-            device = client.device(self._adb_host+':'+str(self._adb_port))
+            device = client.device(host+':'+str(port))
         except:
-            _Logger.error("There is no android device %s:%s", self._adb_host, self._adb_port)
+            _Logger.error("There is no android device %s:%s", host, port)
             return None
     except:
-        _Logger.error("There is no adb server %s:%s", self._host, self._port)
+        _Logger.error("There is no adb server %s:%s", adb_host, adb_port)
         return None
     add_entities([Huestream(name, device)])
 
