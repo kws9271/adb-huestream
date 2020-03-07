@@ -36,23 +36,28 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     adb_port = config.get(CONF_ADB_PORT)
     try:
         client = AdbClient(host=adb_host, port=adb_port)
-        try:
-            device = client.device(host+':'+str(port))
-        except:
+        device = client.device(host+':'+str(port))
+        if device == None:
             _Logger.error("There is no android device %s:%s", host, port)
             return None
     except:
         _Logger.error("There is no adb server %s:%s", adb_host, adb_port)
         return None
-    add_entities([Huestream(name, device)])
+    add_entities([Huestream(name, host, device)])
 
 class Huestream(SwitchDevice):
     """Representation of a Huestream switch."""
-    def __init__(self, name, device):
+    def __init__(self, name, host, device):
         """Initialize the Huestream switch."""
         self._name = name
+        self._host = host
         self._state = None
         self.device = device
+
+    @property
+    def unique_id(self):
+        """Return the switch unique ID."""
+        return self.host
 
     @property
     def name(self):
