@@ -33,7 +33,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     try:
         client = AdbClient(host=self._adb_host, port=self._adb_port)
         try:
-            device = client.device(self._adb_host+self._adb_port)
+            device = client.device(self._adb_host+':'+str(self._adb_port))
         except:
             _Logger.error("There is no android device %s:%s", self._adb_host, self._adb_port)
             return None
