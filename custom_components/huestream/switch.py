@@ -36,12 +36,14 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     adb_port = config.get(CONF_ADB_PORT)
     try:
         client = AdbClient(host=adb_host, port=adb_port)
+        _LOGGER.info("adb server %s connected", adb_host)
         device = client.device(host+':'+str(port))
+        _LOGGER.info("adb device %s connected", host+':'+str(port))
         if device == None:
-            _Logger.error("There is no android device %s:%s", host, port)
+            _LOGGER.error("There is no android device %s:%s", host, port)
             return None
     except:
-        _Logger.error("There is no adb server %s:%s", adb_host, adb_port)
+        _LOGGER.error("There is no adb server %s:%s", adb_host, adb_port)
         return None
     add_entities([Huestream(name, host, device)])
 
@@ -57,7 +59,7 @@ class Huestream(SwitchDevice):
     @property
     def unique_id(self):
         """Return the switch unique ID."""
-        return self.host
+        return self._host
 
     @property
     def name(self):
@@ -67,22 +69,26 @@ class Huestream(SwitchDevice):
     @property
     def is_on(self):
         """Return true if switch is on."""
-        return (self.device.shell('am force-stop com.bullbash.huestream') == 1)
+        return (self.device.shell('am stack list | grep com.bullbash.huestream -c') == 1)
 
     def turn_on(self, **kwargs):
+        self.device.shell('am force-stop com.bullbash.huestream')
         self.device.shell('am start com.bullbash.huestream/.EntertainmentMainActivity')
-        time.sleep(2)
+        time.sleep(3)
         self.device.shell('input keyevent KEYCODE_APP_SWITCH')
+        time.sleep(1)
         self.device.shell('input keyevent ENTER')
+        time.sleep(1)
+        self.update
 
     def turn_off(self, **kwargs):
         self.device.shell('am force-stop com.bullbash.huestream')
+        time.sleep(1)
+        self.update
 
     def update(self):
         try:
-            if self.device.shell('am force-stop com.bullbash.huestream') == 1:
-                self._state = True
-            else:
-                self._state = False
+            self._state = self.device.shell('am stack list | grep com.bullbash.huestream -c') == 1
+            _LOGGER.info("Huestream state updated to %s", self._state)
         except:
-            _LOGGER.error("Reading status from %s", self.name)
+            _LOGGER.error("Reading status from %s", self._name)
