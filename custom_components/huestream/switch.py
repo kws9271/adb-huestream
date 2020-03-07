@@ -20,20 +20,20 @@ DEFAULT_ADB_PORT = '5037'
 DEFAULT_PORT = '5555'
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-	vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-	vol.Required(CONF_HOST): cv.string,
+    vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
+    vol.Required(CONF_HOST): cv.string,
     vol.Optional(CONF_PORT, default=DEFAULT_PORT): cv.port,
-	vol.Optional(CONF_ADB_HOST, default=DEFAULT_ADB_HOST): cv.string,
+    vol.Optional(CONF_ADB_HOST, default=DEFAULT_ADB_HOST): cv.string,
     vol.Optional(CONF_ADB_PORT, default=DEFAULT_ADB_PORT): cv.port
 })
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the Template switch."""
-	name = config.get(CONF_NAME)
-	host = config[CONF_HOST]
-	port = config.get(CONF_PORT)
-	adb_host = config.get(CONF_ADB_HOST)
-	adb_port = config.get(CONF_ADB_PORT)
+    name = config.get(CONF_NAME)
+    host = config[CONF_HOST]
+    port = config.get(CONF_PORT)
+    adb_host = config.get(CONF_ADB_HOST)
+    adb_port = config.get(CONF_ADB_PORT)
     try:
         client = AdbClient(host=adb_host, port=adb_port)
         try:
