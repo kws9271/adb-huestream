@@ -69,16 +69,13 @@ class Huestream(SwitchDevice):
     @property
     def is_on(self):
         """Return true if switch is on."""
-        return (self.device.shell('am stack list | grep com.bullbash.huestream -c') == 1)
+        return (int(self.device.shell('am stack list | grep com.bullbash.huestream -c')) > 0)
 
     def turn_on(self, **kwargs):
-        self.device.shell('am force-stop com.bullbash.huestream')
         self.device.shell('am start com.bullbash.huestream/.EntertainmentMainActivity')
         time.sleep(3)
         self.device.shell('input keyevent KEYCODE_APP_SWITCH')
-        time.sleep(1)
         self.device.shell('input keyevent ENTER')
-        time.sleep(1)
         self.update
 
     def turn_off(self, **kwargs):
@@ -88,7 +85,7 @@ class Huestream(SwitchDevice):
 
     def update(self):
         try:
-            self._state = self.device.shell('am stack list | grep com.bullbash.huestream -c') == 1
+            self._state = ( int(self.device.shell('am stack list | grep com.bullbash.huestream -c')) > 0 )
             _LOGGER.info("Huestream state updated to %s", self._state)
         except:
             _LOGGER.error("Reading status from %s", self._name)
