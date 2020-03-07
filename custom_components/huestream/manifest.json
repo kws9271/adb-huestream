@@ -1,0 +1,10 @@
+{
+    "domain": "huestream",
+    "name": "huestream",
+    "documentation": "https://www.github.com/kws9271/huestream",
+    "requirements": [
+        "pure-python-adb==0.2.3.dev0"
+    ],
+    "dependencies": [],
+    "codeowners": ["@kws9271"]
+  }

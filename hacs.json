@@ -1,0 +1,6 @@
+{
+    "name": "Android Huestream Switch",
+    "content_in_root": false,
+    "domains": ["switch"],
+    "render_readme": true
+}
